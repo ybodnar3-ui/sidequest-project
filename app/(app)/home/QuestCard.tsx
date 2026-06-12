@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { completeQuest } from "./actions";
+import confetti from "canvas-confetti";
 
 const CATEGORY_LABEL: Record<string, string> = {
   social: "Соціальний",
@@ -35,7 +36,12 @@ export function QuestCard(props: {
       ) : (
         <button
           disabled={pending}
-          onClick={() => startTransition(() => completeQuest(props.id))}
+          onClick={() =>
+            startTransition(async () => {
+              await completeQuest(props.id);
+              confetti({ particleCount: 120, spread: 70, origin: { y: 0.7 } });
+            })
+          }
           className="w-full rounded-lg bg-black p-3 text-white disabled:opacity-50"
         >
           {pending ? "Зберігаю…" : "Виконати ✅"}
