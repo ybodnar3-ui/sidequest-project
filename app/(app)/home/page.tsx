@@ -6,6 +6,7 @@ import { QuestCard } from "./QuestCard";
 import { LocationSetup } from "./LocationSetup";
 import { getRewardStats } from "@/lib/rewards/stats";
 import { StatsBar } from "./StatsBar";
+import { PushSetup } from "./PushSetup";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +44,7 @@ export default async function HomePage() {
       ) : (
         <p className="text-gray-600">Не вдалося згенерувати квест. Онови сторінку.</p>
       )}
+      <PushSetup />
       <Link href="/journal" className="text-sm underline">Журнал виконаних 📜</Link>
       <form action="/auth/signout" method="post">
         <button className="rounded-lg border px-4 py-2 text-sm" type="submit">Вийти</button>
