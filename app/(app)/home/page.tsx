@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { getOrCreateTodaysQuest } from "@/lib/quests/today";
 import { QuestCard } from "./QuestCard";
 import { LocationSetup } from "./LocationSetup";
+import { getRewardStats } from "@/lib/rewards/stats";
+import { StatsBar } from "./StatsBar";
 
 export const dynamic = "force-dynamic";
 
@@ -12,10 +14,19 @@ export default async function HomePage() {
   if (!user) redirect("/login");
 
   const { quest, needsLocation } = await getOrCreateTodaysQuest(user.id);
+  const stats = await getRewardStats(user.id);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 p-6">
       <h1 className="text-2xl font-bold">Квест дня 🎲</h1>
+      <StatsBar
+        level={stats.level}
+        totalXp={stats.totalXp}
+        fraction={stats.fraction}
+        intoLevel={stats.intoLevel}
+        span={stats.span}
+        currentStreak={stats.currentStreak}
+      />
       {needsLocation ? (
         <LocationSetup />
       ) : quest ? (
