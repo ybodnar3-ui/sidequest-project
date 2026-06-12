@@ -15,6 +15,8 @@
 
 🚧 У розробці. Фаза 1 — MVP під одного користувача.
 
+🌐 **Live:** https://sidequest-project.vercel.app (Vercel, авто-деплой з `main`)
+
 ## Документація
 
 - [Дизайн-документ](docs/superpowers/specs/2026-06-09-sidequest-design.md)
