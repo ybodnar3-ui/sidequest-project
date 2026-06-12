@@ -7,6 +7,10 @@ export const metadata: Metadata = {
   description: "Один персональний сайд-квест щодня.",
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, statusBarStyle: "default", title: "SideQuest" },
+  icons: {
+    icon: "/icons/icon-192.png",
+    apple: "/icons/apple-touch-icon.png",
+  },
 };
 
 export const viewport: Viewport = {
