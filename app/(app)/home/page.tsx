@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getOrCreateTodaysQuest } from "@/lib/quests/today";
 import { QuestCard } from "./QuestCard";
 import { LocationSetup } from "./LocationSetup";
@@ -42,6 +43,7 @@ export default async function HomePage() {
       ) : (
         <p className="text-gray-600">Не вдалося згенерувати квест. Онови сторінку.</p>
       )}
+      <Link href="/journal" className="text-sm underline">Журнал виконаних 📜</Link>
       <form action="/auth/signout" method="post">
         <button className="rounded-lg border px-4 py-2 text-sm" type="submit">Вийти</button>
       </form>
