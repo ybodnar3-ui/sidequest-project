@@ -2,17 +2,34 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getQuestDateKey } from "@/lib/dates";
+import { awardForQuest } from "@/lib/rewards/award";
 
 export async function completeQuest(questId: string): Promise<void> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  await supabase
+  const { data: transitioned } = await supabase
     .from("quests")
     .update({ status: "done", completed_at: new Date().toISOString() })
     .eq("id", questId)
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .eq("status", "pending")
+    .select("id, xp_value")
+    .maybeSingle();
+
+  if (transitioned) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("time_zone")
+      .eq("id", user.id)
+      .single();
+    const today = getQuestDateKey(new Date(), profile?.time_zone ?? "UTC");
+    await awardForQuest(supabase, user.id, transitioned, today);
+  }
 
   revalidatePath("/home");
 }
