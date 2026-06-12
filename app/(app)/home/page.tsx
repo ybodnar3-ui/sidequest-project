@@ -7,6 +7,8 @@ import { LocationSetup } from "./LocationSetup";
 import { getRewardStats } from "@/lib/rewards/stats";
 import { StatsBar } from "./StatsBar";
 import { PushSetup } from "./PushSetup";
+import { MoodCheckin } from "./MoodCheckin";
+import { getQuestDateKey } from "@/lib/dates";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +19,19 @@ export default async function HomePage() {
 
   const { quest, needsLocation } = await getOrCreateTodaysQuest(user.id);
   const stats = await getRewardStats(user.id);
+
+  const { data: profileTz } = await supabase
+    .from("profiles")
+    .select("time_zone")
+    .eq("id", user.id)
+    .single();
+  const todayKey = getQuestDateKey(new Date(), profileTz?.time_zone ?? "UTC");
+  const { data: moodRow } = await supabase
+    .from("mood_checkins")
+    .select("mood")
+    .eq("user_id", user.id)
+    .eq("checkin_date", todayKey)
+    .maybeSingle();
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 p-6">
@@ -29,6 +44,7 @@ export default async function HomePage() {
         span={stats.span}
         currentStreak={stats.currentStreak}
       />
+      <MoodCheckin current={moodRow?.mood ?? null} />
       {needsLocation ? (
         <LocationSetup />
       ) : quest ? (

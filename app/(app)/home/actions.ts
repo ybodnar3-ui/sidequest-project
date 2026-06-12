@@ -62,3 +62,19 @@ export async function savePushSubscription(sub: {
       { onConflict: "endpoint" },
     );
 }
+
+export async function saveMood(mood: string): Promise<void> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("time_zone")
+    .eq("id", user.id)
+    .single();
+  const today = getQuestDateKey(new Date(), profile?.time_zone ?? "UTC");
+  await supabase
+    .from("mood_checkins")
+    .upsert({ user_id: user.id, checkin_date: today, mood }, { onConflict: "user_id,checkin_date" });
+  revalidatePath("/home");
+}
