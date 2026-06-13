@@ -62,6 +62,7 @@ export default async function HomePage() {
       )}
       <PushSetup />
       <Link href="/journal" className="text-sm underline">Журнал виконаних 📜</Link>
+      <Link href="/settings" className="text-sm underline">Налаштування ⚙️</Link>
       <form action="/auth/signout" method="post">
         <button className="rounded-lg border px-4 py-2 text-sm" type="submit">Вийти</button>
       </form>
