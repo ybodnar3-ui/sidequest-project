@@ -10,6 +10,7 @@ export interface SettingsInput {
   rhythm_mode: "morning" | "popup" | "both";
   quests_per_day: number;
   morning_push_hour: number;
+  enabled_reward_modules: string[];
 }
 
 export async function saveSettings(input: SettingsInput): Promise<void> {
@@ -25,6 +26,7 @@ export async function saveSettings(input: SettingsInput): Promise<void> {
     : "morning";
   const perDay = Math.min(5, Math.max(1, Math.round(input.quests_per_day)));
   const hour = Math.min(23, Math.max(0, Math.round(input.morning_push_hour)));
+  const modules = ["shop", "money"].filter((m) => input.enabled_reward_modules.includes(m));
 
   await supabase
     .from("profiles")
@@ -34,6 +36,7 @@ export async function saveSettings(input: SettingsInput): Promise<void> {
       rhythm_mode: rhythm,
       quests_per_day: perDay,
       morning_push_hour: hour,
+      enabled_reward_modules: ["xp", ...modules],
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);

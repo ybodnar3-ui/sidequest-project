@@ -33,6 +33,7 @@ export function SettingsForm(props: { initial: SettingsInput }) {
   const [rhythm, setRhythm] = useState(props.initial.rhythm_mode);
   const [perDay, setPerDay] = useState(props.initial.quests_per_day);
   const [hour, setHour] = useState(props.initial.morning_push_hour);
+  const [modules, setModules] = useState<string[]>(props.initial.enabled_reward_modules);
   const [pending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
 
@@ -52,6 +53,7 @@ export function SettingsForm(props: { initial: SettingsInput }) {
         rhythm_mode: rhythm,
         quests_per_day: perDay,
         morning_push_hour: hour,
+        enabled_reward_modules: modules,
       });
       setSaved(true);
     });
@@ -100,6 +102,28 @@ export function SettingsForm(props: { initial: SettingsInput }) {
           <input type="number" min={0} max={23} value={hour} onChange={(e) => { setHour(Number(e.target.value)); setSaved(false); }} className="w-16 rounded-lg border p-1 text-center" />
         </label>
         <p className="mt-1 text-xs text-gray-400">Попапи й персональна година — у наступній версії; поки нагадування раз на день.</p>
+      </section>
+
+      <section>
+        <h2 className="mb-2 font-semibold">Модулі нагород</h2>
+        {[
+          { key: "shop", label: "🎁 Магазин реальних нагород" },
+          { key: "money", label: "💰 Грошовий банк" },
+        ].map((m) => (
+          <label key={m.key} className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={modules.includes(m.key)}
+              onChange={() => {
+                setSaved(false);
+                setModules((prev) =>
+                  prev.includes(m.key) ? prev.filter((x) => x !== m.key) : [...prev, m.key],
+                );
+              }}
+            />
+            {m.label}
+          </label>
+        ))}
       </section>
 
       <button onClick={save} disabled={pending} className="rounded-lg bg-black p-3 text-white disabled:opacity-50">

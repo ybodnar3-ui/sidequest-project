@@ -13,7 +13,7 @@ export default async function SettingsPage() {
 
   const { data: p } = await supabase
     .from("profiles")
-    .select("enabled_categories, time_zone, rhythm_mode, quests_per_day, morning_push_hour")
+    .select("enabled_categories, time_zone, rhythm_mode, quests_per_day, morning_push_hour, enabled_reward_modules")
     .eq("id", user.id)
     .single();
 
@@ -30,6 +30,7 @@ export default async function SettingsPage() {
           rhythm_mode: (p?.rhythm_mode ?? "morning") as "morning" | "popup" | "both",
           quests_per_day: p?.quests_per_day ?? 1,
           morning_push_hour: p?.morning_push_hour ?? 8,
+          enabled_reward_modules: p?.enabled_reward_modules ?? ["xp"],
         }}
       />
     </main>
