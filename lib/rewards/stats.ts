@@ -1,8 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { levelProgress } from "./levels";
+import { summarizeLedger } from "./ledger";
 
 export interface RewardStats {
-  totalXp: number;
+  lifetimeXp: number;
+  balance: number;
   level: number;
   fraction: number;
   intoLevel: number;
@@ -18,7 +20,9 @@ export async function getRewardStats(userId: string): Promise<RewardStats> {
     .from("xp_ledger")
     .select("delta")
     .eq("user_id", userId);
-  const totalXp = (ledger ?? []).reduce((sum: number, r: { delta: number }) => sum + r.delta, 0);
+  const { lifetimeXp, balance } = summarizeLedger(
+    (ledger ?? []) as { delta: number }[],
+  );
 
   const { data: streak } = await supabase
     .from("streaks")
@@ -26,9 +30,10 @@ export async function getRewardStats(userId: string): Promise<RewardStats> {
     .eq("user_id", userId)
     .maybeSingle();
 
-  const p = levelProgress(totalXp);
+  const p = levelProgress(lifetimeXp);
   return {
-    totalXp,
+    lifetimeXp,
+    balance,
     level: p.level,
     fraction: p.fraction,
     intoLevel: p.intoLevel,

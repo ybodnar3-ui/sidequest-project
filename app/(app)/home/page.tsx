@@ -38,7 +38,8 @@ export default async function HomePage() {
       <h1 className="text-2xl font-bold">Квест дня 🎲</h1>
       <StatsBar
         level={stats.level}
-        totalXp={stats.totalXp}
+        lifetimeXp={stats.lifetimeXp}
+        balance={stats.balance}
         fraction={stats.fraction}
         intoLevel={stats.intoLevel}
         span={stats.span}
