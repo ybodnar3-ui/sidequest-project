@@ -22,9 +22,10 @@ export default async function HomePage() {
 
   const { data: profileTz } = await supabase
     .from("profiles")
-    .select("time_zone")
+    .select("time_zone, enabled_reward_modules")
     .eq("id", user.id)
     .single();
+  const modules = profileTz?.enabled_reward_modules ?? ["xp"];
   const todayKey = getQuestDateKey(new Date(), profileTz?.time_zone ?? "UTC");
   const { data: moodRow } = await supabase
     .from("mood_checkins")
@@ -64,6 +65,12 @@ export default async function HomePage() {
       <PushSetup />
       <Link href="/journal" className="text-sm underline">Журнал виконаних 📜</Link>
       <Link href="/settings" className="text-sm underline">Налаштування ⚙️</Link>
+      {modules.includes("shop") && (
+        <Link href="/shop" className="text-sm underline">Магазин нагород 🎁</Link>
+      )}
+      {modules.includes("money") && (
+        <Link href="/money" className="text-sm underline">Грошовий банк 💰</Link>
+      )}
       <form action="/auth/signout" method="post">
         <button className="rounded-lg border px-4 py-2 text-sm" type="submit">Вийти</button>
       </form>
