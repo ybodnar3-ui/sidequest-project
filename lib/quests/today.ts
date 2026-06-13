@@ -30,14 +30,23 @@ export async function getOrCreateTodaysQuest(userId: string): Promise<TodaysQues
   const timeZone = profile?.time_zone ?? "UTC";
   const today = getQuestDateKey(new Date(), timeZone);
 
-  const { data: existing } = await supabase
-    .from("quests")
-    .select("id, title, description, category, est_minutes, xp_value, status")
-    .eq("user_id", userId)
-    .eq("quest_date", today)
-    .eq("source", "morning")
-    .maybeSingle();
+  // Read today's morning quest. order+limit(1) keeps this safe even if legacy
+  // duplicates exist; the unique (user_id, quest_date, source) constraint
+  // prevents new ones.
+  async function readToday() {
+    const { data } = await supabase
+      .from("quests")
+      .select("id, title, description, category, est_minutes, xp_value, status")
+      .eq("user_id", userId)
+      .eq("quest_date", today)
+      .eq("source", "morning")
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    return data;
+  }
 
+  const existing = await readToday();
   if (existing) return { quest: existing, needsLocation: false };
 
   if (profile?.current_lat == null || profile?.current_lon == null) {
@@ -86,6 +95,13 @@ export async function getOrCreateTodaysQuest(userId: string): Promise<TodaysQues
     .select("id, title, description, category, est_minutes, xp_value, status")
     .single();
 
-  if (error) throw error;
+  if (error) {
+    // A concurrent request likely won the race and inserted first, tripping the
+    // unique (user_id, quest_date, source) constraint. Return the winner instead
+    // of erroring — this is what stops "answering mood regenerates the quest".
+    const winner = await readToday();
+    if (winner) return { quest: winner, needsLocation: false };
+    throw error;
+  }
   return { quest: inserted, needsLocation: false };
 }
