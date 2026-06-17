@@ -17,6 +17,9 @@ export default async function HomePage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const { data: ob } = await supabase.from("profiles").select("onboarded_at").eq("id", user.id).single();
+  if (!ob?.onboarded_at) redirect("/onboarding");
+
   const { quest, needsLocation } = await getOrCreateTodaysQuest(user.id);
   const stats = await getRewardStats(user.id);
 
