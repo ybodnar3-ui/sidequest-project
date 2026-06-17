@@ -12,12 +12,16 @@ export async function awardForQuest(
   quest: { id: string; xp_value: number },
   today: string,
 ): Promise<void> {
-  await supabase.from("xp_ledger").insert({
+  // Idempotent XP award: a unique index on (quest_id) WHERE reason='quest_done'
+  // makes a second concurrent completion fail here. If so, the XP (and streak)
+  // were already awarded — stop without double-bumping.
+  const { error: ledgerError } = await supabase.from("xp_ledger").insert({
     user_id: userId,
     delta: quest.xp_value,
     reason: "quest_done",
     quest_id: quest.id,
   });
+  if (ledgerError) return;
 
   const { data: streak } = await supabase
     .from("streaks")
@@ -32,12 +36,16 @@ export async function awardForQuest(
     streak?.best_streak ?? 0,
   );
 
+  // Upsert so a missing streak row (e.g. trigger gap) is created, not silently lost.
   await supabase
     .from("streaks")
-    .update({
-      current_streak: next.current,
-      best_streak: next.best,
-      last_done_date: next.lastDone,
-    })
-    .eq("user_id", userId);
+    .upsert(
+      {
+        user_id: userId,
+        current_streak: next.current,
+        best_streak: next.best,
+        last_done_date: next.lastDone,
+      },
+      { onConflict: "user_id" },
+    );
 }

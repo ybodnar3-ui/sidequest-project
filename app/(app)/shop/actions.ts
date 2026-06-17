@@ -2,7 +2,6 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { summarizeLedger } from "@/lib/rewards/ledger";
 
 export async function addReward(name: string, costXp: number): Promise<void> {
   const supabase = await createClient();
@@ -19,29 +18,17 @@ export async function redeemReward(rewardId: string): Promise<{ ok: boolean; rea
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const { data: reward } = await supabase
-    .from("custom_rewards")
-    .select("id, name, cost_xp")
-    .eq("id", rewardId)
-    .eq("user_id", user.id)
-    .maybeSingle();
-  if (!reward) return { ok: false, reason: "not_found" };
+  // Atomic + race-safe: the redeem_reward DB function checks balance, debits XP,
+  // and records the redemption in one transaction (serialized per user), so
+  // concurrent redeems can't overdraw or double-spend.
+  const { data, error } = await supabase.rpc("redeem_reward", { p_reward_id: rewardId });
+  if (error) return { ok: false, reason: "error" };
 
-  const { data: ledger } = await supabase.from("xp_ledger").select("delta").eq("user_id", user.id);
-  const { balance } = summarizeLedger((ledger ?? []) as { delta: number }[]);
-  if (balance < reward.cost_xp) return { ok: false, reason: "insufficient" };
-
-  await supabase.from("xp_ledger").insert({
-    user_id: user.id,
-    delta: -reward.cost_xp,
-    reason: "redeem",
-  });
-  await supabase.from("redemptions").insert({
-    user_id: user.id,
-    reward_id: reward.id,
-    cost_xp: reward.cost_xp,
-  });
-  revalidatePath("/shop");
-  revalidatePath("/home");
-  return { ok: true };
+  const result = data as string;
+  if (result === "ok") {
+    revalidatePath("/shop");
+    revalidatePath("/home");
+    return { ok: true };
+  }
+  return { ok: false, reason: result };
 }

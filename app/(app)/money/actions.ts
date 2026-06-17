@@ -9,11 +9,13 @@ export async function addStake(amount: number, currency: string, note: string): 
   if (!user) throw new Error("Not authenticated");
   const amt = Math.round(amount * 100) / 100;
   if (!(amt > 0)) return;
+  // Sanitize currency to a 3-letter code; cap note length.
+  const cur = (currency || "USD").toUpperCase().replace(/[^A-Z]/g, "").slice(0, 3) || "USD";
   await supabase.from("money_stakes").insert({
     user_id: user.id,
     amount: amt,
-    currency: currency || "USD",
-    note: note.trim() || null,
+    currency: cur,
+    note: note.trim().slice(0, 200) || null,
   });
   revalidatePath("/money");
 }

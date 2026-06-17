@@ -29,9 +29,15 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Defense-in-depth: protect everything except the public surface, so new app
+  // pages are guarded by default rather than relying on each page to remember.
   const path = request.nextUrl.pathname;
-  const isProtected = path.startsWith("/home");
-  if (isProtected && !user) {
+  const isPublic =
+    path === "/" ||
+    path.startsWith("/login") ||
+    path.startsWith("/auth") ||
+    path.startsWith("/api");
+  if (!isPublic && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
