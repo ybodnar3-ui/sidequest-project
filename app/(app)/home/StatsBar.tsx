@@ -8,19 +8,45 @@ export function StatsBar(props: {
   currentStreak: number;
 }) {
   return (
-    <div className="w-full max-w-md rounded-xl border p-4">
-      <div className="mb-2 flex items-center justify-between text-sm">
-        <span className="font-semibold">Рівень {props.level}</span>
-        <span className="text-gray-500">{props.lifetimeXp} XP</span>
-        <span title="Стрік">🔥 {props.currentStreak}</span>
+    <div className="sq-card sq-animate-in sq-delay-1" style={{ width: "100%", maxWidth: 480, padding: "18px 20px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+        {/* Level */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <span className="sq-label">Рівень</span>
+          <span style={{ fontFamily: "'Unbounded', sans-serif", fontWeight: 900, fontSize: "1.4rem", color: "var(--sq-accent2)", lineHeight: 1 }}>
+            {props.level}
+          </span>
+        </div>
+        {/* XP total */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "center" }}>
+          <span className="sq-label">XP</span>
+          <span style={{ fontFamily: "'Unbounded', sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "var(--sq-text)" }}>
+            {props.lifetimeXp}
+          </span>
+        </div>
+        {/* Streak */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "flex-end" }}>
+          <span className="sq-label">Стрік</span>
+          <span style={{ fontFamily: "'Unbounded', sans-serif", fontWeight: 900, fontSize: "1.1rem", color: "var(--sq-gold)", lineHeight: 1 }}>
+            🔥 {props.currentStreak}
+          </span>
+        </div>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-        <div className="h-full rounded-full bg-black transition-all" style={{ width: `${Math.round(props.fraction * 100)}%` }} />
+
+      {/* Progress bar */}
+      <div className="sq-progress-track">
+        <div className="sq-progress-fill" style={{ width: `${Math.round(props.fraction * 100)}%` }} />
       </div>
-      <div className="mt-1 text-right text-xs text-gray-400">
-        {props.intoLevel}/{props.span} до наступного рівня
+
+      {/* Sub-row */}
+      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8 }}>
+        <span style={{ fontSize: "0.75rem", color: "var(--sq-muted)" }}>
+          {props.intoLevel}/{props.span} до наступного рівня
+        </span>
+        <span style={{ fontSize: "0.75rem", color: "var(--sq-muted)" }}>
+          Баланс: {props.balance} XP
+        </span>
       </div>
-      <div className="mt-1 text-xs text-gray-500">Баланс: {props.balance} XP</div>
     </div>
   );
 }

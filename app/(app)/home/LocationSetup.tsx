@@ -32,14 +32,25 @@ export function LocationSetup() {
   }
 
   return (
-    <div className="flex max-w-md flex-col items-center gap-3 text-center">
-      <p className="text-gray-700">
+    <div
+      className="sq-card sq-animate-in sq-delay-2"
+      style={{ width: "100%", maxWidth: 480, padding: "28px 24px", display: "flex", flexDirection: "column", alignItems: "center", gap: 16, textAlign: "center" }}
+    >
+      <div style={{ fontSize: "2.4rem" }}>📍</div>
+      <p style={{ color: "var(--sq-muted2)", fontSize: "0.9rem", lineHeight: 1.6 }}>
         Щоб квести підлаштовувались під твоє місто й погоду, дозволь визначити локацію.
       </p>
-      <button onClick={detect} disabled={busy} className="rounded-lg bg-black px-4 py-3 text-white disabled:opacity-50">
+      <button
+        onClick={detect}
+        disabled={busy}
+        className="sq-btn sq-btn-primary"
+        style={{ width: "100%" }}
+      >
         {busy ? "Визначаю…" : "Визначити мою локацію 📍"}
       </button>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p style={{ fontSize: "0.8rem", color: "var(--sq-error)" }}>{error}</p>
+      )}
     </div>
   );
 }

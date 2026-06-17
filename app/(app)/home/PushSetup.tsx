@@ -35,21 +35,32 @@ export function PushSetup() {
       });
       setStatus("ok");
       setMsg("Нагадування увімкнено ✅");
-    } catch (e) {
+    } catch {
       setStatus("error");
       setMsg("Не вдалося увімкнути сповіщення. На iOS це працює лише у встановленому застосунку.");
     }
   }
 
   if (status === "ok") {
-    return <p className="text-sm text-green-600">{msg}</p>;
+    return (
+      <p style={{ fontSize: "0.82rem", color: "var(--sq-success)", textAlign: "center" }}>{msg}</p>
+    );
   }
+
   return (
-    <div className="flex flex-col items-center gap-1">
-      <button onClick={enable} className="rounded-lg border px-4 py-2 text-sm">
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+      <button
+        onClick={enable}
+        className="sq-btn sq-btn-secondary"
+        style={{ padding: "10px 22px", fontSize: "0.82rem" }}
+      >
         🔔 Увімкнути нагадування
       </button>
-      {msg && <p className="max-w-xs text-center text-xs text-red-600">{msg}</p>}
+      {msg && (
+        <p style={{ maxWidth: 300, textAlign: "center", fontSize: "0.76rem", color: "var(--sq-error)" }}>
+          {msg}
+        </p>
+      )}
     </div>
   );
 }

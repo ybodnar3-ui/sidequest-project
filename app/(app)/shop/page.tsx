@@ -19,15 +19,26 @@ export default async function ShopPage() {
     .order("created_at", { ascending: true });
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col gap-6 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Магазин 🎁</h1>
-        <Link href="/home" className="text-sm underline">← Додому</Link>
+    <main className="sq-page" style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "32px 16px 48px", gap: 20, position: "relative" }}>
+      {/* Ambient orbs */}
+      <div className="sq-orb sq-page-orb-1" aria-hidden />
+      <div className="sq-orb sq-page-orb-2" aria-hidden />
+
+      {/* Header */}
+      <div
+        className="sq-animate-in"
+        style={{ width: "100%", maxWidth: 480, display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", zIndex: 2 }}
+      >
+        <h1 className="sq-heading" style={{ fontSize: "1.3rem" }}>Магазин 🎁</h1>
+        <Link href="/home" className="sq-back">← Додому</Link>
       </div>
-      <ShopClient
-        balance={stats.balance}
-        rewards={(rewards ?? []) as { id: string; name: string; cost_xp: number }[]}
-      />
+
+      <div style={{ width: "100%", maxWidth: 480, position: "relative", zIndex: 2 }}>
+        <ShopClient
+          balance={stats.balance}
+          rewards={(rewards ?? []) as { id: string; name: string; cost_xp: number }[]}
+        />
+      </div>
     </main>
   );
 }

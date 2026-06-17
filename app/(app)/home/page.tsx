@@ -35,45 +35,83 @@ export default async function HomePage() {
     .maybeSingle();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 p-6">
-      <h1 className="text-2xl font-bold">Квест дня 🎲</h1>
-      <StatsBar
-        level={stats.level}
-        lifetimeXp={stats.lifetimeXp}
-        balance={stats.balance}
-        fraction={stats.fraction}
-        intoLevel={stats.intoLevel}
-        span={stats.span}
-        currentStreak={stats.currentStreak}
-      />
-      <MoodCheckin current={moodRow?.mood ?? null} />
-      {needsLocation ? (
-        <LocationSetup />
-      ) : quest ? (
-        <QuestCard
-          id={quest.id}
-          title={quest.title}
-          description={quest.description}
-          category={quest.category}
-          estMinutes={quest.est_minutes}
-          xpValue={quest.xp_value}
-          status={quest.status}
+    <main className="sq-page" style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "32px 16px 48px", gap: 16, position: "relative" }}>
+      {/* Ambient orbs */}
+      <div className="sq-orb sq-page-orb-1" aria-hidden />
+      <div className="sq-orb sq-page-orb-2" aria-hidden />
+
+      {/* Header */}
+      <div
+        className="sq-animate-in"
+        style={{ width: "100%", maxWidth: 480, display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4, position: "relative", zIndex: 2 }}
+      >
+        <h1 className="sq-heading" style={{ fontSize: "1.3rem" }}>Квест дня 🎲</h1>
+        <form action="/auth/signout" method="post">
+          <button
+            className="sq-btn sq-btn-secondary"
+            type="submit"
+            style={{ padding: "7px 16px", fontSize: "0.72rem" }}
+          >
+            Вийти
+          </button>
+        </form>
+      </div>
+
+      {/* Content — all constrained and z-indexed above orbs */}
+      <div style={{ width: "100%", maxWidth: 480, display: "flex", flexDirection: "column", gap: 14, position: "relative", zIndex: 2 }}>
+        <StatsBar
+          level={stats.level}
+          lifetimeXp={stats.lifetimeXp}
+          balance={stats.balance}
+          fraction={stats.fraction}
+          intoLevel={stats.intoLevel}
+          span={stats.span}
+          currentStreak={stats.currentStreak}
         />
-      ) : (
-        <p className="text-gray-600">Не вдалося згенерувати квест. Онови сторінку.</p>
-      )}
-      <PushSetup />
-      <Link href="/journal" className="text-sm underline">Журнал виконаних 📜</Link>
-      <Link href="/settings" className="text-sm underline">Налаштування ⚙️</Link>
-      {modules.includes("shop") && (
-        <Link href="/shop" className="text-sm underline">Магазин нагород 🎁</Link>
-      )}
-      {modules.includes("money") && (
-        <Link href="/money" className="text-sm underline">Грошовий банк 💰</Link>
-      )}
-      <form action="/auth/signout" method="post">
-        <button className="rounded-lg border px-4 py-2 text-sm" type="submit">Вийти</button>
-      </form>
+        <MoodCheckin current={moodRow?.mood ?? null} />
+        {needsLocation ? (
+          <LocationSetup />
+        ) : quest ? (
+          <QuestCard
+            id={quest.id}
+            title={quest.title}
+            description={quest.description}
+            category={quest.category}
+            estMinutes={quest.est_minutes}
+            xpValue={quest.xp_value}
+            status={quest.status}
+          />
+        ) : (
+          <div className="sq-card" style={{ padding: "20px 24px", textAlign: "center" }}>
+            <p style={{ color: "var(--sq-muted)" }}>Не вдалося згенерувати квест. Онови сторінку.</p>
+          </div>
+        )}
+
+        <PushSetup />
+
+        {/* Nav links */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 8 }}>
+          <hr className="sq-divider" />
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center", paddingTop: 4 }}>
+            <Link href="/journal" className="sq-btn sq-btn-secondary" style={{ padding: "9px 20px", fontSize: "0.78rem" }}>
+              Журнал 📜
+            </Link>
+            <Link href="/settings" className="sq-btn sq-btn-secondary" style={{ padding: "9px 20px", fontSize: "0.78rem" }}>
+              Налаштування ⚙️
+            </Link>
+            {modules.includes("shop") && (
+              <Link href="/shop" className="sq-btn sq-btn-secondary" style={{ padding: "9px 20px", fontSize: "0.78rem" }}>
+                Магазин 🎁
+              </Link>
+            )}
+            {modules.includes("money") && (
+              <Link href="/money" className="sq-btn sq-btn-secondary" style={{ padding: "9px 20px", fontSize: "0.78rem" }}>
+                Банк 💰
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
     </main>
   );
 }

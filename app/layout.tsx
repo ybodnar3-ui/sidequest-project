@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="uk" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col sq-grain" style={{ background: "var(--sq-bg)", color: "var(--sq-text)" }}>
         {children}
         <SWRegister />
       </body>

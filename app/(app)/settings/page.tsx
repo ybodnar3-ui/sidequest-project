@@ -18,21 +18,32 @@ export default async function SettingsPage() {
     .single();
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col gap-6 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Налаштування ⚙️</h1>
-        <Link href="/home" className="text-sm underline">← Додому</Link>
+    <main className="sq-page" style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "32px 16px 48px", gap: 20, position: "relative" }}>
+      {/* Ambient orbs */}
+      <div className="sq-orb sq-page-orb-1" aria-hidden />
+      <div className="sq-orb sq-page-orb-2" aria-hidden />
+
+      {/* Header */}
+      <div
+        className="sq-animate-in"
+        style={{ width: "100%", maxWidth: 480, display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", zIndex: 2 }}
+      >
+        <h1 className="sq-heading" style={{ fontSize: "1.3rem" }}>Налаштування ⚙️</h1>
+        <Link href="/home" className="sq-back">← Додому</Link>
       </div>
-      <SettingsForm
-        initial={{
-          enabled_categories: p?.enabled_categories ?? [...QUEST_CATEGORIES],
-          time_zone: p?.time_zone ?? "UTC",
-          rhythm_mode: (p?.rhythm_mode ?? "morning") as "morning" | "popup" | "both",
-          quests_per_day: p?.quests_per_day ?? 1,
-          morning_push_hour: p?.morning_push_hour ?? 8,
-          enabled_reward_modules: p?.enabled_reward_modules ?? ["xp"],
-        }}
-      />
+
+      <div style={{ width: "100%", maxWidth: 480, position: "relative", zIndex: 2 }}>
+        <SettingsForm
+          initial={{
+            enabled_categories: p?.enabled_categories ?? [...QUEST_CATEGORIES],
+            time_zone: p?.time_zone ?? "UTC",
+            rhythm_mode: (p?.rhythm_mode ?? "morning") as "morning" | "popup" | "both",
+            quests_per_day: p?.quests_per_day ?? 1,
+            morning_push_hour: p?.morning_push_hour ?? 8,
+            enabled_reward_modules: p?.enabled_reward_modules ?? ["xp"],
+          }}
+        />
+      </div>
     </main>
   );
 }
